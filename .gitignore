@@ -1,0 +1,18 @@
+# Ignore files in images.
+images/**
+# Ignore all done files.
+done/**
+# In general, most common images.
+*.jpg
+*.jpeg
+*.gif
+*.png
+*.svg
+*.bmp
+infobmp
+# Ignore files in pdfs.
+pdfs/**
+# In general, all pdf files.
+*.pdf
+# Ignore DS apple cloud file.
+*.DS_Store
