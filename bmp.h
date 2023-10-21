@@ -1,5 +1,12 @@
 
-#define BITMAP_MAGIC 0x4D42
+#define BITMAP_MAGIC 0x424D
+#define BITMAP_LCS 0x4D424544
+#define BITMAP_BPP_1 0x0001
+#define BITMAP_BPP_2 0x0002
+#define BITMAP_BPP_4 0x0004
+#define BITMAP_BPP_8 0x0008
+#define BITMAP_BPP_16 0x0010
+#define BITMAP_BPP_32 0x0020
 
 struct bmpheader {
     uint16_t type;              // "BM" (0x42, 0x4D)
@@ -56,11 +63,9 @@ struct gamma {
 } __attribute__((__packed__));
 typedef struct gamma gamma_t;
 
-typedef uint32_t lcs_t;
-
 struct bmpcolor {
 	rgba_mask_t rgbam;
-	lcs_t lcs;
+	uint32_t lcs;
 	ciexyztriple_t xyz;
 	gamma_t g;
 } __attribute__((__packed__));
@@ -74,8 +79,21 @@ struct bmpprofile {
 } __attribute__((__packed__));
 typedef struct bmpprofile bmpprofile_t;
 
+struct bmp {
+	bmpheader_t head;
+	bmpinfo_t info;
+	bmpcolor_t color;
+	bmpprofile_t profile;
+} __attribute__((__packed__));
+typedef struct bmp bmp_t;
+
 void print_bmp_header( const bmpheader_t* header );
 void print_bmp_info( const bmpinfo_t* info );
 void print_bmp_color( const bmpcolor_t* color );
 void print_bmp_profile( const bmpprofile_t* profile );
+void print_bmp( const bmp_t bmp );
 
+uint16_t swap_uint16( uint16_t val );
+uint32_t swap_uint32( uint32_t val );
+
+uint16_t bmp_bpp_check( uint16_t bpp );

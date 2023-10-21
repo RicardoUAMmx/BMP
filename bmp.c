@@ -64,7 +64,7 @@ void print_bmp_color( const bmpcolor_t* color ){
 	printf( "%-12s", "AlphaMask:" );
 	printf( "%x\n", color->rgbam.alpha );
 	printf( "%-12s", "LCS:" );
-	printf( "%s\n", ( char * )&color->lcs );
+	printf( "%x\n", color->lcs );
 	printf( "%-12s", "RX:" );
 	printf( "%u\n", color->xyz.ciexyz_red.ciexyz_x );
 	printf( "%-12s", "RY:" );
@@ -109,4 +109,33 @@ void print_bmp_profile( const bmpprofile_t* profile ){
 	printf( "\n" );
 }
 
+void print_bmp( const bmp_t bmp ){
+	print_bmp_header( &bmp.head );
+	print_bmp_info( &bmp.info );
+	print_bmp_color( &bmp.color );
+	print_bmp_profile( &bmp.profile );
+}
+
+uint16_t swap_uint16( uint16_t val ){
+	return ( val << 8 ) | ( val >> 8 );
+}
+
+uint32_t swap_uint32( uint32_t val ){
+    val = ( ( val << 8 ) & 0xFF00FF00 ) | ( ( val >> 8 ) & 0xFF00FF ); 
+    return ( val << 16 ) | ( val >> 16 );
+}
+
+uint16_t bmp_bpp_check( uint16_t bpp ){
+	if( bpp == BITMAP_BPP_1  ||
+		bpp == BITMAP_BPP_2  ||
+		bpp == BITMAP_BPP_4  ||
+		bpp == BITMAP_BPP_8  ||
+		bpp == BITMAP_BPP_16 ||
+		bpp == BITMAP_BPP_32 )
+	{
+		return bpp;
+	}
+
+	return 0;
+}
 
