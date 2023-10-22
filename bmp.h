@@ -96,4 +96,6 @@ void print_bmp( const bmp_t bmp );
 uint16_t swap_uint16( uint16_t val );
 uint32_t swap_uint32( uint32_t val );
 
+uint8_t bmp_offset_check( bmp_t bmp );
 uint16_t bmp_bpp_check( uint16_t bpp );
+uint8_t bmp_size_check( bmpinfo_t info );

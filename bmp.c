@@ -125,17 +125,27 @@ uint32_t swap_uint32( uint32_t val ){
     return ( val << 16 ) | ( val >> 16 );
 }
 
-uint16_t bmp_bpp_check( uint16_t bpp ){
-	if( bpp == BITMAP_BPP_1  ||
-		bpp == BITMAP_BPP_2  ||
-		bpp == BITMAP_BPP_4  ||
-		bpp == BITMAP_BPP_8  ||
-		bpp == BITMAP_BPP_16 ||
-		bpp == BITMAP_BPP_32 )
-	{
-		return bpp;
+uint8_t bmp_offset_check( bmp_t bmp ){
+	if( bmp.head.offset != ( sizeof( bmp.head ) + bmp.info.size ) ){
+		return 1;
 	}
-
 	return 0;
 }
 
+uint16_t bmp_bpp_check( uint16_t bpp ){
+	if( bpp == BITMAP_BPP_8  ||
+		bpp == BITMAP_BPP_16 ||
+		bpp == BITMAP_BPP_32 )
+	{
+		return 0;
+	}
+
+	return 1;
+}
+
+uint8_t bmp_size_check( bmpinfo_t info ){
+	if( info.image_size != ( info.width * info.height ) * ( info.bpp/8 ) ){
+		return 1;
+	}
+	return 0;
+}
