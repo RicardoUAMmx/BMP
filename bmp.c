@@ -10,7 +10,7 @@ void print_bmp_header( const bmpheader_t* header ){
 	printf( "%s", "--------- " );
 	printf( "%s\n", "--------- " );
 	printf( "%-12s", "Kind:" );
-	printf( "%s\n", ( char * )&header->type );
+	printf( "0x%x\n", header->type );
 	printf( "%-12s", "Size:" );
 	printf( "%u\n", header->size );
 	printf( "%-12s", "Offset:" );
@@ -27,9 +27,9 @@ void print_bmp_info( const bmpinfo_t* info ){
 	printf( "%-12s", "DIB Head:" );
 	printf( "%u\n", info->size );
 	printf( "%-12s", "Width:" );
-	printf( "%u\n", info->width );
+	printf( "%u ( %x )\n", info->width, info->width );
 	printf( "%-12s", "Height:" );
-	printf( "%u\n", info->height );
+	printf( "%u ( %x )\n", info->height, info->height );
 	printf( "%-12s", "Planes:" );
 	printf( "%hu\n", info->planes );
 	printf( "%-12s", "BPP:" );
@@ -167,6 +167,65 @@ uint8_t bmp_compression_check( uint32_t compression ){
 	return 1;
 }
 
+
+bmpheader_t bmp_header_null( void ){
+	bmpheader_t head = {
+		.type = 0,
+		.size = 0,
+		.reserved1 = 0,
+		.reserved2 = 0,
+		.offset = 0,
+	};
+	return head;
+}
+
+bmpinfo_t bmp_info_null( void ){
+	bmpinfo_t info = {
+		.size = 0,
+		.width = 0,
+		.height = 0,
+		.planes = 0,
+		.bpp = 0,
+		.compression = 0,
+		.image_size = 0,
+		.x_ppm = 0,
+		.y_ppm = 0,
+		.num_colors = 0,
+		.important_colors = 0,
+	};
+	return info;
+}
+
+bmpcolor_t bmp_color_null( void ){
+	bmpcolor_t color = {
+		.rgbam.red = 0,
+		.rgbam.green = 0,
+		.rgbam.blue = 0,
+		.rgbam.alpha = 0,
+		.lcs = 0,
+		.xyz.ciexyz_red.ciexyz_x = 0,
+		.xyz.ciexyz_red.ciexyz_y = 0,
+		.xyz.ciexyz_red.ciexyz_z = 0,
+		.xyz.ciexyz_green.ciexyz_x = 0,
+		.xyz.ciexyz_green.ciexyz_y = 0,
+		.xyz.ciexyz_green.ciexyz_z = 0,
+		.xyz.ciexyz_blue.ciexyz_x = 0,
+		.xyz.ciexyz_blue.ciexyz_y = 0,
+		.xyz.ciexyz_blue.ciexyz_z = 0,
+		.g.red = 0,
+		.g.green = 0,
+		.g.blue = 0,
+	};
+	return color;
+}
+
+bmp_t bmp_create_null( void ){
+	bmp_t bmp;
+	bmp.head = bmp_header_null(  );
+	bmp.info = bmp_info_null (  );
+	return bmp;
+}
+
 bmp_t bmp_create( uint32_t width, uint32_t height, uint16_t bpp, uint32_t compression ){
 
 	bmp_t bmp;
@@ -174,18 +233,18 @@ bmp_t bmp_create( uint32_t width, uint32_t height, uint16_t bpp, uint32_t compre
 	if( bmp_bpp_check( bpp ) ){
 		fprintf( stderr, "\nError: unsoportted bpp ( %u )\n",
 				 bpp );
-		return bmp;
+		return bmp = bmp_create_null(  );
 	}
 
 	if( bmp_compression_check( compression ) ){
 		fprintf( stderr, "\nError: unsoportted compression ( %x )\n",
 				 compression );
-		return bmp;
+		return bmp = bmp_create_null(  );
 	}
 
 	bmp.head.type = BITMAP_MAGIC;
 	bmp.head.size = sizeof( bmpheader_t ) + sizeof( bmpinfo_t ) +
-					( width * height * ( compression/8 ) );
+					( width * height * ( bpp >> 3 ) );
 	bmp.head.reserved1 = 0;
 	bmp.head.reserved2 = 0;
 	bmp.head.offset = sizeof( bmpheader_t ) + sizeof( bmpinfo_t );
@@ -195,7 +254,7 @@ bmp_t bmp_create( uint32_t width, uint32_t height, uint16_t bpp, uint32_t compre
 	bmp.info.planes = 1;
 	bmp.info.bpp = bpp;
 	bmp.info.compression = compression;
-	bmp.info.image_size = width * height * ( compression/8 );
+	bmp.info.image_size = width * height * ( bpp >> 3 );
 	bmp.info.x_ppm = 0;
 	bmp.info.y_ppm = 0;
 	bmp.info.num_colors = 0;

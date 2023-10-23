@@ -125,3 +125,10 @@ uint8_t bmp_offset_check( bmp_t bmp );
 uint8_t bmp_bpp_check( uint16_t bpp );
 uint8_t bmp_size_check( bmpinfo_t info );
 uint8_t bmp_compression_check( uint32_t compression );
+
+bmpheader_t bmp_header_null( void );
+bmpinfo_t bmp_info_null( void );
+bmpcolor_t bmp_color_null( void );
+
+bmp_t bmp_create( uint32_t width, uint32_t height, uint16_t bpp, uint32_t compression );
+bmp_t bmp_create_null( void );
