@@ -112,10 +112,10 @@ struct bmp_v5 {
 } __attribute__((__packed__));
 typedef struct bmp_v5 bmp_v5_t;
 
-void print_bmp_header( const bmpheader_t* header );
-void print_bmp_info( const bmpinfo_t* info );
-void print_bmp_color( const bmpcolor_t* color );
-void print_bmp_profile( const bmpprofile_t* profile );
+void print_bmp_header( bmpheader_t header );
+void print_bmp_info( bmpinfo_t info );
+void print_bmp_color( bmpcolor_t color );
+void print_bmp_profile( bmpprofile_t profile );
 void print_bmp( const bmp_v5_t bmp );
 
 uint16_t swap_uint16( uint16_t val );
