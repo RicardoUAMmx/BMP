@@ -42,5 +42,11 @@ int main(){
 		return 1;
 	}
 
+	if( bmp_compression_check( bmp_head.info.compression ) ){
+		fprintf( stderr, "\nError: unsoportted compression ( %x )\n",
+				bmp_head.info.compression );
+		return 1;
+	}
+
 	return 0;
 }

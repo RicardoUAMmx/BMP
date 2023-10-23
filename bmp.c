@@ -109,7 +109,7 @@ void print_bmp_profile( const bmpprofile_t* profile ){
 	printf( "\n" );
 }
 
-void print_bmp( const bmp_t bmp ){
+void print_bmp( const bmp_v5_t bmp ){
 	print_bmp_header( &bmp.head );
 	print_bmp_info( &bmp.info );
 	print_bmp_color( &bmp.color );
@@ -132,7 +132,7 @@ uint8_t bmp_offset_check( bmp_t bmp ){
 	return 0;
 }
 
-uint16_t bmp_bpp_check( uint16_t bpp ){
+uint8_t bmp_bpp_check( uint16_t bpp ){
 	if( bpp == BITMAP_BPP_8  ||
 		bpp == BITMAP_BPP_16 ||
 		bpp == BITMAP_BPP_32 )
@@ -149,3 +149,58 @@ uint8_t bmp_size_check( bmpinfo_t info ){
 	}
 	return 0;
 }
+
+uint8_t bmp_compression_check( uint32_t compression ){
+	if( compression == BI_RGB  ||
+		compression == BI_RLE8 ||
+		compression == BI_RLE4 ||
+		compression == BI_BITFIELDS ||
+		compression == BI_JPEG ||
+		compression == BI_PNG  ||
+		compression == BI_CMYK ||
+		compression == BI_CMYKRLE8 ||
+		compression == BI_CMYKRLE4 )
+	{
+		return 0;
+	}
+
+	return 1;
+}
+
+bmp_t bmp_create( uint32_t width, uint32_t height, uint16_t bpp, uint32_t compression ){
+
+	bmp_t bmp;
+
+	if( bmp_bpp_check( bpp ) ){
+		fprintf( stderr, "\nError: unsoportted bpp ( %u )\n",
+				 bpp );
+		return bmp;
+	}
+
+	if( bmp_compression_check( compression ) ){
+		fprintf( stderr, "\nError: unsoportted compression ( %x )\n",
+				 compression );
+		return bmp;
+	}
+
+	bmp.head.type = BITMAP_MAGIC;
+	bmp.head.size = sizeof( bmpheader_t ) + sizeof( bmpinfo_t ) +
+					( width * height * ( compression/8 ) );
+	bmp.head.reserved1 = 0;
+	bmp.head.reserved2 = 0;
+	bmp.head.offset = sizeof( bmpheader_t ) + sizeof( bmpinfo_t );
+	bmp.info.size = sizeof( bmpinfo_t );
+	bmp.info.width = width;
+	bmp.info.height = height;
+	bmp.info.planes = 1;
+	bmp.info.bpp = bpp;
+	bmp.info.compression = compression;
+	bmp.info.image_size = width * height * ( compression/8 );
+	bmp.info.x_ppm = 0;
+	bmp.info.y_ppm = 0;
+	bmp.info.num_colors = 0;
+	bmp.info.important_colors = 0;
+
+	return bmp;
+}
+

@@ -8,6 +8,18 @@
 #define BITMAP_BPP_16 0x0010
 #define BITMAP_BPP_32 0x0020
 
+typedef enum {
+	BI_RGB = 0x0000,
+	BI_RLE8 = 0x0001,
+	BI_RLE4 = 0x0002,
+	BI_BITFIELDS = 0x0003,
+	BI_JPEG = 0x0004,
+	BI_PNG = 0x0005,
+	BI_CMYK = 0x000B,
+	BI_CMYKRLE8 = 0x000C,
+	BI_CMYKRLE4 = 0x000D
+} Compression;
+
 struct bmpheader {
     uint16_t type;              // "BM" (0x42, 0x4D)
     uint32_t size;              // file size
@@ -82,20 +94,34 @@ typedef struct bmpprofile bmpprofile_t;
 struct bmp {
 	bmpheader_t head;
 	bmpinfo_t info;
+} __attribute__((__packed__));
+typedef struct bmp bmp_t;
+
+struct bmp_v4 {
+	bmpheader_t head;
+	bmpinfo_t info;
+	bmpcolor_t color;
+} __attribute__((__packed__));
+typedef struct bmp_v4 bmp_v4_t;
+
+struct bmp_v5 {
+	bmpheader_t head;
+	bmpinfo_t info;
 	bmpcolor_t color;
 	bmpprofile_t profile;
 } __attribute__((__packed__));
-typedef struct bmp bmp_t;
+typedef struct bmp_v5 bmp_v5_t;
 
 void print_bmp_header( const bmpheader_t* header );
 void print_bmp_info( const bmpinfo_t* info );
 void print_bmp_color( const bmpcolor_t* color );
 void print_bmp_profile( const bmpprofile_t* profile );
-void print_bmp( const bmp_t bmp );
+void print_bmp( const bmp_v5_t bmp );
 
 uint16_t swap_uint16( uint16_t val );
 uint32_t swap_uint32( uint32_t val );
 
 uint8_t bmp_offset_check( bmp_t bmp );
-uint16_t bmp_bpp_check( uint16_t bpp );
+uint8_t bmp_bpp_check( uint16_t bpp );
 uint8_t bmp_size_check( bmpinfo_t info );
+uint8_t bmp_compression_check( uint32_t compression );

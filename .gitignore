@@ -9,7 +9,10 @@ done/**
 *.png
 *.svg
 *.bmp
+# Binary output
 infobmp
+# Binary and code from letter
+letter*
 # Ignore files in pdfs.
 pdfs/**
 # In general, all pdf files.
